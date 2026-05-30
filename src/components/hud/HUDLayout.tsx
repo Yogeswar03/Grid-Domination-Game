@@ -35,6 +35,7 @@ export default function HUDLayout({
   const color = useGameStore((s) => s.color);
   const energy = useGameStore((s) => s.energy);
   const maxEnergy = useGameStore((s) => s.maxEnergy);
+  const selectedHex = useGameStore((s) => s.selectedHex);
 
   const energyPct = Math.round((energy / maxEnergy) * 100);
   const isEnergyLow = energyPct <= 20;
@@ -50,25 +51,26 @@ export default function HUDLayout({
           borderColor: 'var(--border-subtle)' 
         }}
       >
-        {/* Left: Player ID and Compact Energy Bar */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 flex-shrink-0">
+        {/* Left: Spaced HUD Metrics (Operator Status, Energy Bar, Sector Scanner) */}
+        <div className="flex items-center gap-8">
+          {/* Operator Status */}
+          <div className="flex items-center gap-2.5 flex-shrink-0">
             <div
-              className="w-3 h-3 rounded-full flex-shrink-0"
+              className="w-3.5 h-3.5 rounded-full flex-shrink-0"
               style={{
                 backgroundColor: color,
                 boxShadow: `0 0 8px ${color}88`,
               }}
             />
-            <span className="text-xs font-bold uppercase tracking-wider truncate max-w-32">
+            <span className="text-sm font-bold uppercase tracking-wider truncate max-w-48 text-[var(--text-primary)]">
               {username || 'OPERATOR'}
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] text-[var(--text-secondary)] uppercase font-semibold">EP:</span>
-            {/* Flat Energy Bar */}
-            <div className="w-24 h-2 bg-slate-800 border border-slate-700 rounded-sm overflow-hidden flex-shrink-0">
+          {/* Energy Protocol */}
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] text-[var(--text-secondary)] uppercase font-semibold">ENERGY:</span>
+            <div className="w-36 h-2.5 bg-slate-800 border border-slate-700 rounded-sm overflow-hidden flex-shrink-0">
               <div 
                 className="h-full transition-all duration-150"
                 style={{ 
@@ -79,14 +81,26 @@ export default function HUDLayout({
                 }}
               />
             </div>
-            <span className={`text-[11px] font-bold ${isEnergyLow ? 'text-red-400' : 'text-[var(--accent-cyan)]'}`}>
-              {Math.floor(energy)}/{maxEnergy}
+            <span className={`text-xs font-bold font-mono min-w-[70px] ${isEnergyLow ? 'text-red-400' : 'text-[var(--accent-cyan)]'}`}>
+              {Math.floor(energy)}/{maxEnergy} EP
             </span>
+          </div>
+
+          {/* Sector Scanner (Selected Hex Info) */}
+          <div className="flex items-center gap-2.5 border-l border-[#334155] pl-8">
+            <span className="text-[11px] text-[var(--text-secondary)] uppercase font-semibold">SCANNER:</span>
+            {selectedHex ? (
+              <span className="text-xs font-bold text-[var(--text-primary)]">
+                [{selectedHex.q}, {selectedHex.r}]
+              </span>
+            ) : (
+              <span className="text-xs text-[var(--text-tertiary)] uppercase">[STANDBY]</span>
+            )}
           </div>
 
           {/* Cooldown Active / Visual Warn */}
           {cooldownActive && (
-            <span className="text-[9px] px-1.5 py-0.5 rounded-sm border border-red-500 bg-red-950/20 text-red-400 uppercase tracking-widest animate-pulse font-bold">
+            <span className="text-[10px] px-2.5 py-0.5 rounded-sm border border-red-500 bg-red-950/20 text-red-400 uppercase tracking-widest animate-pulse font-bold">
               SYS RECHARGING
             </span>
           )}
