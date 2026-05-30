@@ -1,26 +1,574 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Share+Tech+Mono&display=swap');
+
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ═══════════════════════════════════════════════════════════════
+   TERRITORY DOMINATION — Design System
+   Tactical Command Interface v2.1
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Theme Variables ─────────────────────────────────────────── */
+
+:root,
+[data-theme='dark'] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-panel: rgba(30, 41, 59, 0.95);
+  --bg-panel-solid: #1e293b;
+  --bg-input: #0f172a;
+
+  --border-subtle: #334155;
+  --border-glow: #475569;
+  --border-glow-strong: #64748b;
+  --border-glow-active: #94a3b8;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --text-accent: #38bdf8;
+
+  --accent-cyan: #38bdf8;
+  --accent-cyan-dim: rgba(56, 189, 248, 0.1);
+  --accent-blue: #2563eb;
+  --accent-blue-dim: rgba(37, 99, 235, 0.1);
+  --accent-teal: #0d9488;
+
+  --danger: #ef4444;
+  --danger-dim: rgba(239, 68, 68, 0.1);
+  --warning: #f59e0b;
+  --warning-dim: rgba(245, 158, 11, 0.1);
+  --success: #22c55e;
+  --success-dim: rgba(34, 197, 94, 0.1);
+
+  --glow-cyan: none;
+  --glow-cyan-strong: none;
+  --glow-blue: none;
+
+  --canvas-bg: #0f172a;
+  --grid-line: rgba(71, 85, 105, 0.15);
+  --hex-neutral-fill: #1e293b;
+  --hex-neutral-stroke: #334155;
+
+  --font-display: var(--font-sans), system-ui, sans-serif;
+  --font-heading: var(--font-sans), system-ui, sans-serif;
+  --font-body: var(--font-sans), system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-theme='light'] {
+  --bg-primary: #e4eaf2;
+  --bg-secondary: #ecf0f7;
+  --bg-tertiary: #f4f6fa;
+  --bg-panel: rgba(236, 240, 248, 0.92);
+  --bg-panel-solid: #edf1f8;
+  --bg-input: rgba(220, 228, 240, 0.9);
+
+  --border-subtle: rgba(160, 180, 200, 0.4);
+  --border-glow: rgba(0, 90, 160, 0.25);
+  --border-glow-strong: rgba(0, 90, 160, 0.45);
+  --border-glow-active: rgba(0, 90, 160, 0.7);
+
+  --text-primary: #1a2535;
+  --text-secondary: #5a6a7a;
+  --text-tertiary: #8a98a8;
+  --text-accent: #006688;
+
+  --accent-cyan: #007799;
+  --accent-cyan-dim: rgba(0, 119, 153, 0.1);
+  --accent-blue: #0055cc;
+  --accent-blue-dim: rgba(0, 85, 204, 0.1);
+  --accent-teal: #007a6e;
+
+  --danger: #cc4400;
+  --danger-dim: rgba(204, 68, 0, 0.1);
+  --warning: #cc2222;
+  --warning-dim: rgba(204, 34, 34, 0.1);
+  --success: #008844;
+  --success-dim: rgba(0, 136, 68, 0.1);
+
+  --glow-cyan: 0 0 6px rgba(0, 90, 160, 0.1);
+  --glow-cyan-strong: 0 0 8px rgba(0, 90, 160, 0.15), 0 0 20px rgba(0, 90, 160, 0.08);
+  --glow-blue: 0 0 6px rgba(0, 85, 204, 0.1);
+
+  --canvas-bg: #dde4ee;
+  --grid-line: rgba(0, 90, 160, 0.06);
+  --hex-neutral-fill: #d0d8e4;
+  --hex-neutral-stroke: #b8c4d4;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ── Base Reset ──────────────────────────────────────────────── */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--accent-cyan-dim);
+  color: var(--accent-cyan);
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-glow);
+}
+
+/* ── Typography Classes ──────────────────────────────────────── */
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.1em;
+}
+.font-heading {
+  font-family: var(--font-heading);
+  letter-spacing: 0.06em;
+}
+.font-body {
+  font-family: var(--font-body);
+}
+.font-mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+/* ── Tactical Panel ──────────────────────────────────────────── */
+
+.tactical-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  box-shadow: none;
+  border-radius: 6px;
+  position: relative;
+}
+
+.tactical-panel::before,
+.tactical-panel::after {
+  display: none;
+}
+
+.tactical-panel-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-primary);
+  padding: 8px 14px 6px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* ── Neon Glow Effects ───────────────────────────────────────── */
+
+.neon-border {
+  border: 1px solid var(--border-glow);
+  box-shadow: var(--glow-cyan);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.neon-border:hover {
+  border-color: var(--border-glow-strong);
+  box-shadow: var(--glow-cyan-strong);
+}
+
+.neon-text {
+  color: var(--accent-cyan);
+  text-shadow: 0 0 6px rgba(0, 255, 204, 0.4), 0 0 15px rgba(0, 255, 204, 0.15);
+}
+
+.neon-text-blue {
+  color: var(--accent-blue);
+  text-shadow: 0 0 6px rgba(0, 136, 255, 0.4), 0 0 15px rgba(0, 136, 255, 0.15);
+}
+
+/* ── Glow Pulse Animation ────────────────────────────────────── */
+
+.glow-pulse {
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: var(--glow-cyan);
+  }
+  50% {
+    box-shadow: var(--glow-cyan-strong);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.glow-pulse-text {
+  animation: glowPulseText 3s ease-in-out infinite;
+}
+
+@keyframes glowPulseText {
+  0%, 100% {
+    text-shadow: 0 0 4px rgba(0, 255, 204, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 8px rgba(0, 255, 204, 0.5), 0 0 20px rgba(0, 255, 204, 0.2);
+  }
+}
+
+/* ── Scanline Overlay ────────────────────────────────────────── */
+
+.scanline-overlay {
+  display: none !important;
+}
+
+/* ── Animated Grid Background ────────────────────────────────── */
+
+.grid-bg {
+  display: none !important;
+}
+
+@keyframes gridDrift {
+  0% { background-position: 0 0; }
+  100% { background-position: 50px 50px; }
+}
+
+/* ── Tactical Button ─────────────────────────────────────────── */
+
+.tactical-btn {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border: 1px solid var(--border-glow);
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.tactical-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 0%, var(--accent-cyan-dim) 100%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.tactical-btn:hover {
+  border-color: var(--border-glow-strong);
+  box-shadow: var(--glow-cyan-strong);
+}
+
+.tactical-btn:hover::before {
+  opacity: 1;
+}
+
+.tactical-btn:active {
+  transform: scale(0.97);
+}
+
+.tactical-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.tactical-btn-primary {
+  background: linear-gradient(135deg, rgba(0, 255, 204, 0.08) 0%, rgba(0, 136, 255, 0.08) 100%);
+  border-color: var(--border-glow-strong);
+  color: var(--accent-cyan);
+}
+
+.tactical-btn-danger {
+  border-color: rgba(255, 107, 53, 0.3);
+  color: var(--danger);
+}
+
+.tactical-btn-danger:hover {
+  border-color: rgba(255, 107, 53, 0.5);
+  box-shadow: 0 0 10px rgba(255, 107, 53, 0.2), 0 0 30px rgba(255, 107, 53, 0.08);
+}
+
+/* ── Energy Bar ──────────────────────────────────────────────── */
+
+.energy-bar-track {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  height: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.energy-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-teal), var(--accent-cyan));
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+}
+
+.energy-bar-fill::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 30px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2));
+  animation: energyShine 2s ease-in-out infinite;
+}
+
+@keyframes energyShine {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.energy-bar-low .energy-bar-fill {
+  background: linear-gradient(90deg, var(--warning), var(--danger));
+}
+
+/* ── Tactical Input ──────────────────────────────────────────── */
+
+.tactical-input {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  padding: 10px 14px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  outline: none;
+  width: 100%;
+}
+
+.tactical-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.tactical-input:focus {
+  border-color: var(--border-glow-strong);
+  box-shadow: var(--glow-cyan), inset 0 0 10px rgba(0, 255, 204, 0.03);
+}
+
+/* ── Color Picker Swatches ───────────────────────────────────── */
+
+.color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.color-swatch.selected {
+  border-color: var(--text-primary);
+  box-shadow: 0 0 10px currentColor;
+}
+
+.color-swatch.selected::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  opacity: 0.4;
+}
+
+/* ── Leaderboard Table ───────────────────────────────────────── */
+
+.lb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.lb-table th {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 10px;
+  color: var(--text-secondary);
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.lb-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid rgba(30, 45, 65, 0.25);
+  color: var(--text-primary);
+}
+
+.lb-table tr:hover td {
+  background: var(--accent-cyan-dim);
+}
+
+.lb-table .lb-self td {
+  background: rgba(0, 255, 204, 0.06);
+  border-left: 2px solid var(--accent-cyan);
+}
+
+/* ── Online Indicator ────────────────────────────────────────── */
+
+.online-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  display: inline-block;
+  animation: onlinePulse 2s ease-in-out infinite;
+}
+
+@keyframes onlinePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4); }
+  50% { box-shadow: 0 0 0 4px rgba(0, 255, 136, 0); }
+}
+
+/* ── Activity Feed ───────────────────────────────────────────── */
+
+.feed-item {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 10px;
+  border-left: 2px solid transparent;
+  transition: background 0.2s;
+}
+
+.feed-item:hover {
+  background: var(--accent-cyan-dim);
+}
+
+.feed-item-capture { border-left-color: var(--accent-cyan); }
+.feed-item-attack { border-left-color: var(--danger); }
+.feed-item-system { border-left-color: var(--accent-blue); }
+.feed-item-warning { border-left-color: var(--warning); }
+.feed-item-join { border-left-color: var(--success); }
+.feed-item-leave { border-left-color: var(--text-tertiary); }
+
+.feed-timestamp {
+  font-size: 9px;
+  color: var(--text-tertiary);
+  margin-left: 6px;
+}
+
+/* ── Minimap ─────────────────────────────────────────────────── */
+
+.minimap-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.minimap-viewport-rect {
+  position: absolute;
+  border: 1px solid var(--accent-cyan);
+  box-shadow: 0 0 6px rgba(0, 255, 204, 0.3);
+  pointer-events: none;
+}
+
+/* ── Radar Sweep (Minimap) ───────────────────────────────────── */
+
+.radar-sweep {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  height: 50%;
+  transform-origin: 0% 0%;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 255, 204, 0.08) 0%,
+    transparent 100%
+  );
+  animation: radarRotate 6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes radarRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ── Season Timer ────────────────────────────────────────────── */
+
+.season-timer {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  color: var(--accent-cyan);
+  letter-spacing: 0.1em;
+}
+
+.season-label {
+  font-family: var(--font-display);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--text-secondary);
+}
+
+/* ── Utility Animations ──────────────────────────────────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.animate-fade-in { animation: fadeIn 0.5s ease-out; }
+.animate-slide-up { animation: slideUp 0.4s ease-out; }
+.animate-slide-right { animation: slideRight 0.4s ease-out; }
+.animate-breathe { animation: breathe 3s ease-in-out infinite; }
+
+/* ── Flicker (subtle CRT) ───────────────────────────────────── */
+
+.crt-flicker {
+  animation: crtFlicker 0.1s infinite alternate;
+}
+
+@keyframes crtFlicker {
+  0% { opacity: 0.985; }
+  100% { opacity: 1; }
 }
