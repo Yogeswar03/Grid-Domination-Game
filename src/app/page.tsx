@@ -166,7 +166,7 @@ export default function Home() {
 
     const connectWebSocket = () => {
       const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 
-        `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//localhost:3001`;
+        `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.hostname}:3001`;
       console.log(`[ws-client] Connecting to ws server at ${wsUrl}`);
 
       const ws = new WebSocket(wsUrl);
@@ -476,7 +476,7 @@ export default function Home() {
 
   // ── Offline Game Loop Clock Ticker ────────────────────────────
   useEffect(() => {
-    if (websocketConnected) return;
+    if (websocketConnected || !isJoined) return;
 
     const clock = setInterval(() => {
       if (roundState === 'active') {
@@ -577,7 +577,7 @@ export default function Home() {
 
   // ── Local Tile Decay Clock Ticker (Offline mode) ──────────────
   useEffect(() => {
-    if (websocketConnected) return;
+    if (websocketConnected || !isJoined) return;
 
     const decayTimer = setInterval(() => {
       if (roundState !== 'active') return;
@@ -602,7 +602,7 @@ export default function Home() {
     }, 1000);
 
     return () => clearInterval(decayTimer);
-  }, [websocketConnected, roundState, updateTile]);
+  }, [websocketConnected, roundState, updateTile, isJoined]);
  
    // Spawn player base on deploy
    const lastJoinedRef = useRef(false);
@@ -615,6 +615,7 @@ export default function Home() {
        }
  
        if (!websocketConnected) {
+         setTimeRemaining(180);
          const playerTilesList: TileData[] = [
            {
              q: PLAYER_SPAWN_Q,
@@ -672,7 +673,7 @@ export default function Home() {
  
    // ── Bot Faction Paint Wars Simulation (Offline Mode only) ─────
    useEffect(() => {
-     if (websocketConnected || roundState !== 'active') return;
+     if (websocketConnected || roundState !== 'active' || !isJoined) return;
  
      const botTimer = setInterval(() => {
        const bot = BOTS[Math.floor(Math.random() * BOTS.length)];
@@ -732,7 +733,7 @@ export default function Home() {
      }, 1500);
  
      return () => clearInterval(botTimer);
-   }, [websocketConnected, roundState, updateTile, addFeedMessage, audio]);
+   }, [websocketConnected, roundState, updateTile, addFeedMessage, audio, isJoined]);
  
    return (
      <main className="relative w-full h-full select-none overflow-hidden" style={{ background: 'var(--bg-primary)' }}>

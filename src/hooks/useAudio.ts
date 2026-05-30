@@ -5,7 +5,7 @@
 // React wrapper for tactical sound synthesis
 // ═══════════════════════════════════════════════════════════════
 
-import { useEffect, useCallback, useRef } from 'react';
+import { useEffect, useCallback, useRef, useMemo } from 'react';
 import { tacticalAudio } from '@/lib/audio/TacticalAudio';
 import { useUIStore } from '@/store/uiStore';
 
@@ -49,5 +49,13 @@ export function useAudio() {
   const warning = useCallback(() => tacticalAudio.warningPulse(), []);
   const recharge = useCallback(() => tacticalAudio.rechargeSound(), []);
 
-  return { click, blip, capturePulse, attackSound, warning, recharge };
+  return useMemo(() => ({
+    click,
+    blip,
+    capturePulse,
+    attackSound,
+    warning,
+    recharge
+  }), [click, blip, capturePulse, attackSound, warning, recharge]);
 }
+

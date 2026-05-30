@@ -1,8 +1,8 @@
 'use client';
 
 // ═══════════════════════════════════════════════════════════════
-// TERRITORY DOMINATION — Leaderboard
-// Dominion rankings overlay with tactical table styling
+// HEX PAINT WARS — Sidebar Leaderboard
+// Clean flat sidebar showing player dominance rankings in real-time
 // ═══════════════════════════════════════════════════════════════
 
 import { motion } from 'framer-motion';
@@ -13,180 +13,109 @@ interface LeaderboardProps {
   onClose: () => void;
 }
 
-const tableRowVariants = {
-  hidden: { opacity: 0, x: -10 },
-  visible: (i: number) => ({
-    opacity: 1,
-    x: 0,
-    transition: {
-      delay: i * 0.04,
-      duration: 0.3,
-      ease: [0.22, 1, 0.36, 1] as const,
-    },
-  }),
-};
-
-function RankBadge({ rank }: { rank: number }) {
-  const badges: Record<number, string> = { 1: '◆', 2: '◇', 3: '▪' };
-  const colors: Record<number, string> = {
-    1: '#ffcc00',
-    2: '#c0c0c0',
-    3: '#cd7f32',
-  };
-
-  if (rank <= 3) {
-    return (
-      <span style={{ color: colors[rank], textShadow: `0 0 6px ${colors[rank]}44` }}>
-        {badges[rank]} {rank}
-      </span>
-    );
-  }
-
-  return <span style={{ color: 'var(--text-secondary)' }}>{rank}</span>;
-}
-
 export default function Leaderboard({ onClose }: LeaderboardProps) {
   const leaderboard = useGameStore((s) => s.leaderboard);
   const playerId = useGameStore((s) => s.playerId);
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95, y: 10 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95, y: 10 }}
-      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-      className="tactical-panel relative"
-      style={{ width: 520, maxHeight: '80vh' }}
+      initial={{ x: 320, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: 320, opacity: 0 }}
+      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+      className="fixed right-0 top-0 bottom-0 z-40 w-80 border-l flex flex-col font-mono text-[var(--text-primary)] pointer-events-auto shadow-2xl"
+      style={{
+        background: 'rgba(30, 41, 59, 0.95)',
+        backdropFilter: 'blur(8px)',
+        borderColor: 'var(--border-subtle)',
+        paddingTop: '64px', // Space below the top bar
+      }}
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Corner brackets */}
-      <div
-        className="absolute top-[-1px] right-[-1px] w-[14px] h-[14px] pointer-events-none"
-        style={{ borderTop: '1px solid var(--accent-cyan)', borderRight: '1px solid var(--accent-cyan)', opacity: 0.6 }}
-      />
-      <div
-        className="absolute bottom-[-1px] left-[-1px] w-[14px] h-[14px] pointer-events-none"
-        style={{ borderBottom: '1px solid var(--accent-cyan)', borderLeft: '1px solid var(--accent-cyan)', opacity: 0.6 }}
-      />
-
-      {/* ── Title Bar ── */}
-      <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-        <h2
-          className="font-display text-sm font-bold tracking-[0.2em] uppercase neon-text"
-        >
-          Dominion Rankings
-        </h2>
-        <TacticalButton variant="ghost" size="sm" onClick={onClose} className="!px-2 !py-1">
-          ✕
+      {/* Header */}
+      <div 
+        className="flex items-center justify-between px-4 py-3 border-b" 
+        style={{ borderColor: 'var(--border-subtle)' }}
+      >
+        <div className="flex items-center gap-2">
+          <span className="online-dot" />
+          <h2 className="text-xs font-bold tracking-[0.2em] uppercase text-[var(--accent-cyan)]">
+            DOMINANCE LEADERBOARD
+          </h2>
+        </div>
+        <TacticalButton variant="ghost" size="sm" onClick={onClose} className="!px-2 !py-0.5 !text-[10px]">
+          CLOSE ✕
         </TacticalButton>
       </div>
 
-      {/* ── Table ── */}
-      <div className="p-4 overflow-y-auto" style={{ maxHeight: 'calc(80vh - 60px)' }}>
+      {/* Rankings List */}
+      <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2.5">
         {leaderboard.length === 0 ? (
           <div
-            className="font-mono text-xs text-center py-12 tracking-wider"
-            style={{ color: 'var(--text-tertiary)' }}
+            className="text-[10px] text-center py-12 tracking-wider text-[var(--text-tertiary)]"
           >
-            ─── No dominion data available ───
-            <br />
-            <span className="text-[10px]">Territory captures will populate rankings</span>
+            ── NO OPERATORS CONNECTED ──
           </div>
         ) : (
-          <table className="lb-table">
-            <thead>
-              <tr>
-                <th style={{ width: 50 }}>Rank</th>
-                <th>Operator</th>
-                <th style={{ width: 70, textAlign: 'right' }}>Territory</th>
-                <th style={{ width: 70, textAlign: 'right' }}>Captures</th>
-                <th style={{ width: 70, textAlign: 'right' }}>Influence</th>
-                <th style={{ width: 60, textAlign: 'right' }}>Dom%</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leaderboard.map((player, index) => {
-                const isSelf = player.id === playerId;
+          leaderboard.map((player, index) => {
+            const isSelf = player.id === playerId;
+            const rank = index + 1;
 
-                return (
-                  <motion.tr
-                    key={player.id}
-                    custom={index}
-                    variants={tableRowVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className={isSelf ? 'lb-self' : ''}
+            return (
+              <div
+                key={player.id}
+                className="p-2.5 rounded-sm border flex items-center justify-between gap-2 transition-all"
+                style={{
+                  background: isSelf ? 'rgba(56, 189, 248, 0.08)' : 'rgba(15, 23, 42, 0.3)',
+                  borderColor: isSelf ? 'var(--accent-cyan)' : 'var(--border-subtle)',
+                }}
+              >
+                {/* Left: Rank & Color Badge & Callsign */}
+                <div className="flex items-center gap-2 min-w-0">
+                  <span 
+                    className="text-xs font-bold w-4 text-center"
+                    style={{
+                      color: rank === 1 ? '#ffcc00' : rank === 2 ? '#94a3b8' : rank === 3 ? '#cd7f32' : 'var(--text-secondary)'
+                    }}
                   >
-                    <td>
-                      <RankBadge rank={index + 1} />
-                    </td>
-                    <td>
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                          style={{
-                            backgroundColor: player.color,
-                            boxShadow: isSelf
-                              ? `0 0 8px ${player.color}88`
-                              : `0 0 4px ${player.color}44`,
-                          }}
-                        />
-                        <span
-                          className="truncate"
-                          style={{
-                            color: isSelf ? 'var(--accent-cyan)' : 'var(--text-primary)',
-                            fontWeight: isSelf ? 600 : 400,
-                          }}
-                        >
-                          {player.username}
-                          {isSelf && (
-                            <span
-                              className="ml-1.5 text-[9px] tracking-widest uppercase"
-                              style={{ color: 'var(--text-secondary)' }}
-                            >
-                              (you)
-                            </span>
-                          )}
-                        </span>
-                      </div>
-                    </td>
-                    <td style={{ textAlign: 'right' }}>
-                      <span style={{ color: 'var(--accent-cyan)' }}>{player.territory}</span>
-                    </td>
-                    <td style={{ textAlign: 'right' }}>{player.captures}</td>
-                    <td style={{ textAlign: 'right' }}>{player.influenceScore}</td>
-                    <td style={{ textAlign: 'right' }}>
-                      <span
-                        style={{
-                          color: player.dominationPct > 30
-                            ? 'var(--success)'
-                            : player.dominationPct > 10
-                              ? 'var(--accent-cyan)'
-                              : 'var(--text-primary)',
-                        }}
-                      >
-                        {player.dominationPct.toFixed(1)}%
-                      </span>
-                    </td>
-                  </motion.tr>
-                );
-              })}
-            </tbody>
-          </table>
+                    #{rank}
+                  </span>
+                  <div
+                    className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                    style={{
+                      backgroundColor: player.color,
+                      boxShadow: `0 0 6px ${player.color}40`,
+                    }}
+                  />
+                  <span
+                    className="text-xs font-bold truncate text-ellipsis tracking-wide"
+                    style={{ color: isSelf ? 'var(--accent-cyan)' : 'var(--text-primary)' }}
+                  >
+                    {player.username} {isSelf && <span className="text-[9px] text-[var(--text-secondary)] font-normal">(YOU)</span>}
+                  </span>
+                </div>
+
+                {/* Right: Score */}
+                <div className="flex flex-col items-end flex-shrink-0 font-mono">
+                  <span className="text-xs font-bold text-[var(--accent-cyan)]">
+                    {player.territory} <span className="text-[9px] text-[var(--text-secondary)] font-normal">Sectors</span>
+                  </span>
+                  <span className="text-[9px] text-[var(--text-tertiary)] mt-0.5">
+                    {player.dominationPct.toFixed(1)}% Grid
+                  </span>
+                </div>
+              </div>
+            );
+          })
         )}
       </div>
 
-      {/* ── Footer ── */}
-      <div
-        className="px-4 py-2 border-t text-center"
+      {/* Footer info */}
+      <div 
+        className="p-3 border-t text-center text-[9px] text-[var(--text-tertiary)] tracking-widest uppercase"
         style={{ borderColor: 'var(--border-subtle)' }}
       >
-        <span
-          className="font-mono text-[9px] tracking-wider uppercase"
-          style={{ color: 'var(--text-tertiary)' }}
-        >
-          Press TAB to close · Updated in real-time
-        </span>
+        Real-time grid updates
       </div>
     </motion.div>
   );
